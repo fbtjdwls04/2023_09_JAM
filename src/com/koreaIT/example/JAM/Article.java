@@ -1,0 +1,17 @@
+package com.koreaIT.example.JAM;
+
+public class Article {
+	public int id;
+	public String title;
+	public String body;
+	
+	public Article(String title, String body) {
+		this.title = title;
+		this.body = body;
+	}
+
+	@Override
+	public String toString() {
+		return "Article [id=" + id + ", title=" + title + ", body=" + body + "]";
+	}
+}
