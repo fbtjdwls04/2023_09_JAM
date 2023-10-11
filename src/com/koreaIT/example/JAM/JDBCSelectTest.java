@@ -5,14 +5,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
+import java.util.ArrayList;
 
-public class JDBCInsertTest {
+public class JDBCSelectTest {
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	
-	JDBCInsertTest(Scanner sc) {
+	JDBCSelectTest() {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -21,44 +21,25 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			String title;
-			String body;
-			while (true) {
-				System.out.print("제목 : ");
-				title = sc.nextLine().trim();
-				if (title.length() == 0) {
-					System.out.println("제목을 입력해주세요.");
-					continue;
-				}
-				break;
-			}
-			while (true) {
-				System.out.print("내용 : ");
-				body = sc.nextLine().trim();
-				if (body.length() == 0) {
-					System.out.println("내용을 입력해주세요.");
-					continue;
-				}
-				break;
-			}
-			
-			String sql = "INSERT INTO article "
-					+ "SET regDate = NOW(),"
-					+ "updateDate = NOW(),"
-					+ "title = CONCAT('"+ title +"'),"
-					+ "`body` = CONCAT('"+ body +"');";
-			
+			String sql = "SELECT * FROM article ORDER BY id DESC;";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.executeUpdate();
 			
-			sql = "SELECT MAX(id) AS id FROM article";
-			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
+			ArrayList<Article> articles = new ArrayList<>(); 
+			
 			while(rs.next()) {
-				System.out.println(rs.getInt(1) + "번 글이 생성되었습니다.");
+				articles.add(new Article(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
 			}
 			
+			for(Article article : articles) {
+				System.out.println("id : " + article.id);
+				System.out.println("작성일 : " + article.regDate);
+				System.out.println("수정일 : " + article.updateDate);
+				System.out.println("제목 : " + article.title);
+				System.out.println("내용 : " + article.body);
+				System.out.println("-------------------------------");
+			}
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");
@@ -66,6 +47,9 @@ public class JDBCInsertTest {
 			System.out.println("에러 : " + e);
 		} finally {
 			try {
+				if (rs != null && !rs.isClosed()) {
+					rs.close();
+				}
 				if (pstmt != null && !pstmt.isClosed()) {
 					pstmt.close();
 				}
@@ -77,5 +61,20 @@ public class JDBCInsertTest {
 			}
 		}
 
+	}
+}
+
+class Article {
+	int id;
+	String regDate;
+	String updateDate;
+	String title;
+	String body;
+	Article(int id, String regDate, String updateDate, String title, String body){
+		this.id = id;
+		this.regDate = regDate;
+		this.updateDate = updateDate;
+		this.title = title;
+		this.body = body;
 	}
 }

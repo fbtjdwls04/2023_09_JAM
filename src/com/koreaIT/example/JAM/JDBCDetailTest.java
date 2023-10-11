@@ -5,14 +5,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
 
-public class JDBCInsertTest {
+public class JDBCDetailTest {
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	
-	JDBCInsertTest(Scanner sc) {
+	JDBCDetailTest(int id) {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -21,51 +20,32 @@ public class JDBCInsertTest {
 			conn = DriverManager.getConnection(url, "root", "");
 			System.out.println("연결 성공!");
 			
-			String title;
-			String body;
-			while (true) {
-				System.out.print("제목 : ");
-				title = sc.nextLine().trim();
-				if (title.length() == 0) {
-					System.out.println("제목을 입력해주세요.");
-					continue;
-				}
-				break;
-			}
-			while (true) {
-				System.out.print("내용 : ");
-				body = sc.nextLine().trim();
-				if (body.length() == 0) {
-					System.out.println("내용을 입력해주세요.");
-					continue;
-				}
-				break;
-			}
-			
-			String sql = "INSERT INTO article "
-					+ "SET regDate = NOW(),"
-					+ "updateDate = NOW(),"
-					+ "title = CONCAT('"+ title +"'),"
-					+ "`body` = CONCAT('"+ body +"');";
-			
-			pstmt = conn.prepareStatement(sql);
-			pstmt.executeUpdate();
-			
-			sql = "SELECT MAX(id) AS id FROM article";
+			String sql = "SELECT * FROM article WHERE id = "+ id +";";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			
-			while(rs.next()) {
-				System.out.println(rs.getInt(1) + "번 글이 생성되었습니다.");
+			if(!rs.isBeforeFirst()) {
+				System.out.println("게시물이 존재하지 않습니다.");
+				return;
 			}
-			
+			while(rs.next()) {
+				System.out.println("id : " + rs.getInt(1));
+				System.out.println("작성일 : " + rs.getString(2));
+				System.out.println("수정일 : " + rs.getString(3));
+				System.out.println("제목 : " + rs.getString(4));
+				System.out.println("내용 : " + rs.getString(5));
+				System.out.println("-------------------------------");
+			}
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
-			try {
+			try {	
+				if (rs != null && !rs.isClosed()) {
+					rs.close();
+				}
 				if (pstmt != null && !pstmt.isClosed()) {
 					pstmt.close();
 				}

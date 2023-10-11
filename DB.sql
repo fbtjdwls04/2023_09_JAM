@@ -18,4 +18,9 @@ updateDate = NOW(),
 title = CONCAT('제목',CEIL(RAND()*10)),
 `body` = CONCAT('내용',CEIL(RAND()*10));
 
-SELECT * FROM article;
+SELECT * FROM article ORDER BY id DESC;
+
+UPDATE article 
+SET title = '안녕1',
+updateDate = NOW()
+WHERE id = 1;
