@@ -1,91 +1,179 @@
 package com.koreaIT.example.JAM;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.koreaIT.example.JAM.util.DBUtil;
+import com.koreaIT.example.JAM.util.SecSql;
+
 public class App {
+
 	public void start() {
-		System.out.println("== 프로그램 시작 ==");
-		
+		System.out.println("=프로그램 시작==");
 		Scanner sc = new Scanner(System.in);
-		
+
 		while (true) {
 			System.out.print("명령어 ) ");
-			String command = sc.nextLine().trim();
-			String splitCommand[] = command.split(" ");
+			String cmd = sc.nextLine().trim();
 
-			if (command.length() == 0)
-				continue;
-			if (command.equals("exit"))
-				break;
-			if (command.startsWith("article") && splitCommand.length > 1) {
-				
-				// 게시물 작성
-				if (splitCommand[1].equals("write")) { 
-					new JDBCInsertTest(sc);
-				}
-				
-				// 게시물 목록
- 				else if (splitCommand[1].equals("list")) { 
-					new JDBCSelectTest();
-				}
-				
-				// 게시물 디테일
- 				else if (splitCommand[1].equals("detail")) {
-					if (!numberCheck(splitCommand)) {
-						continue;
-					}
-					
-					int id = Integer.parseInt(splitCommand[2]);
-					new JDBCDetailTest(id);
-				}
-				
-				// 게시물 삭제
- 				else if (splitCommand[1].equals("delete")) {
- 					if (!numberCheck(splitCommand)) {
-						continue;
-					}
- 					
-					int id = Integer.parseInt(splitCommand[2]);
-					new JDBCDeleteTest(id);
-				}
-				
-				// 게시물 수정
- 				else if (splitCommand[1].equals("modify")) {
- 					if (!numberCheck(splitCommand)) {
-						continue;
-					}
- 					
-					int id = Integer.parseInt(splitCommand[2]);
-					new JDBCUpdateTest(id, sc);
-				}
-				
-				// 잘못된 명령어 처리
- 				else {
-					System.out.println("존재하지 않는 명령어입니다.");
-				}
-			}else {
-				System.out.println("존재하지 않는 명령어입니다.");
+			Connection conn = null;
+
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+
+			} catch (ClassNotFoundException e) {
+				System.out.println("드라이버 로딩 실패");
+				e.printStackTrace();
 			}
-		}
+ 
+			String url = "jdbc:mysql://127.0.0.1:3306/JAM?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 
-		System.out.println("== 프로그램 끝 ==");
+			try {
+				conn = DriverManager.getConnection(url, "root", "");
+
+				int actionRs = doAction(conn, cmd, sc);
+
+				if (actionRs == -1) {
+					System.out.println("==프로그램 종료==");
+					break;
+				}
+
+			} catch (SQLException e) {
+				System.out.println("에러 : " + e);
+			} finally {
+				try {
+					if (conn != null && !conn.isClosed()) {
+						conn.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
 
 		sc.close();
-	}
-	
-	static boolean numberCheck(String[] splitCommand) {
-		if (splitCommand.length < 3) {
-			System.out.println("게시물 번호를 입력해주세요.");
-			return false;
-		}else {
-			try {
-				Integer.parseInt(splitCommand[2]);
-			} catch(NumberFormatException ex) {
-				System.out.println("숫자를 입력해주세요.");
-				return false;
-			}
-		}
-		return true;
-	}
-}
 
+	}
+
+	private int doAction(Connection conn, String cmd, Scanner sc) {
+
+		if (cmd.equals("exit")) {
+			return -1;
+		}
+
+		if (cmd.equals("article write")) {
+			System.out.println("==게시물 작성==");
+			System.out.printf("제목 : ");
+			String title = sc.nextLine();
+			System.out.printf("내용 : ");
+			String body = sc.nextLine();
+
+			SecSql sql = new SecSql();
+			sql.append("INSERT INTO article");
+			sql.append("SET regDate = NOW(),");
+			sql.append("updateDate = NOW(),");
+			sql.append("title = ?,",title);
+			sql.append("`body` = ?",body);
+			
+			int id = DBUtil.insert(conn, sql);
+			
+			System.out.printf("%d번 게시물이 생성되었습니다.\n", id);
+			
+		} else if (cmd.equals("article list")) {
+			System.out.println("==게시물 목록==");
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+
+			ArrayList<Article> articles = new ArrayList<Article>();
+
+			try {
+				String sql = "SELECT *";
+				sql += " FROM article";
+				sql += " ORDER BY id DESC;";
+				System.out.println(sql);
+
+				pstmt = conn.prepareStatement(sql);
+
+				rs = pstmt.executeQuery(sql);
+
+				while (rs.next()) {
+					int id = rs.getInt("id");
+					String regDate = rs.getString("regDate");
+					String updateDate = rs.getString("updateDate");
+					String title = rs.getString("title");
+					String body = rs.getString("body");
+					Article article = new Article(id, regDate, updateDate, title, body);
+					articles.add(article);
+				}
+
+			} catch (SQLException e) {
+				System.out.println("에러 a.l: " + e);
+			} finally {
+				try {
+					if (rs != null && !rs.isClosed()) {
+						rs.close();
+					}
+					if (pstmt != null && !pstmt.isClosed()) {
+						pstmt.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (articles.size() == 0) {
+				System.out.println("게시글이 없습니다");
+				return 0;
+			}
+			System.out.println("번호   /   제목");
+			for (Article article : articles) {
+				System.out.printf("%4d   /   %s\n", article.id, article.title);
+			}
+		} else if (cmd.startsWith("article modify")) {
+			System.out.println("==게시물 수정==");
+			int id = Integer.parseInt(cmd.split(" ")[2]);
+
+			System.out.printf("새 제목 : ");
+			String newTitle = sc.nextLine();
+			System.out.printf("새 내용 : ");
+			String newBody = sc.nextLine();
+
+			PreparedStatement pstmt = null;
+
+			try {
+
+				String sql = "UPDATE article";
+				sql += " SET updateDate = NOW(),";
+				sql += " title = '" + newTitle + "',";
+				sql += " `body` = '" + newBody + "'";
+				sql += " WHERE id = " + id + ";";
+
+				System.out.println(sql);
+
+				pstmt = conn.prepareStatement(sql);
+
+				pstmt.executeUpdate();
+
+			} catch (SQLException e) {
+				System.out.println("에러 : " + e);
+			} finally {
+				try {
+					if (pstmt != null && !pstmt.isClosed()) {
+						pstmt.close();
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.println(id + "번 글이 수정되었습니다");
+		}
+
+		return 0;
+	}
+
+}
