@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.koreaIT.example.JAM.service.MemberService;
 
 public class MemberController extends Controller{
+	
 	private MemberService memberService;
 	private Scanner sc;
 	
@@ -14,7 +15,7 @@ public class MemberController extends Controller{
 		this.sc = sc;
 	}
 	
-	public int doJoin() {
+	public void doJoin() {
 		/** 멤버 회원가입 */
 		System.out.println("== 회원 가입 ==");
 		String loginId = null;
@@ -37,6 +38,7 @@ public class MemberController extends Controller{
 			}
 			break;
 		}
+		
 		while(true) {
 			System.out.print("비밀번호 : ");
 			loginPw = sc.nextLine().trim();
@@ -67,12 +69,10 @@ public class MemberController extends Controller{
 		
 		System.out.println("회원가입이 완료되었습니다.");
 		System.out.printf("[%s] 계정이 생성되었습니다.\n", loginId);
-	
-		return 0;
 	}
 	
 	/** 멤버 로그인 */
-	public int doLogin() {
+	public void doLogin() {
 		System.out.println("== 로그인 ==");
 		
 		String loginId = null;
@@ -87,6 +87,7 @@ public class MemberController extends Controller{
 			}
 			break;
 		}
+		
 		while(true) {
 			System.out.print("비밀번호 : ");
 			loginPw = sc.nextLine().trim();
@@ -97,11 +98,6 @@ public class MemberController extends Controller{
 			break;
 		}
 		
-		if(loginMember.isEmpty()) {
-			System.out.println("아이디와 비밀번호를 확인해주세요.");
-			return 0;
-		}
 		System.out.printf("%s님 환영합니다.\n", loginId);
-		return 0;
 	}
 }
