@@ -18,7 +18,7 @@ public class DBUtil {
 		List<Map<String, Object>> rows = selectRows(dbConn, sql);
 
 		if (rows.size() == 0) {
-			return new HashMap<>();
+			return new HashMap<>(); // 크기가 0인 Map 을 return
 		}
 
 		return rows.get(0);

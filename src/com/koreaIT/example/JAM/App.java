@@ -13,11 +13,11 @@ import com.koreaIT.example.JAM.util.DBUtil;
 import com.koreaIT.example.JAM.util.SecSql;
 
 public class App {
-
+	Map<String, Object> loginMember = null;
 	public void start() {
 		System.out.println("=프로그램 시작==");
 		Scanner sc = new Scanner(System.in);
-
+		
 		while (true) {
 			System.out.print("명령어 ) ");
 			String cmd = sc.nextLine().trim();
@@ -181,12 +181,13 @@ public class App {
 			System.out.printf("%d번 게시물이 삭제되었습니다.\n",id);
 			
 		}
-		// 회원가입
+		// 멤버 회원가입
 		else if(cmd.equals("member join")) {
 			System.out.println("== 회원 가입 ==");
-			String loginId;
-			String loginPw;
-			String name;
+			String loginId = null;
+			String loginPw = null;
+			String name = null;
+			
 			while(true) {
 				System.out.print("아이디 : ");
 				loginId = sc.nextLine().trim();
@@ -200,8 +201,8 @@ public class App {
 				sql.append("FROM members");
 				sql.append("WHERE loginId = ?", loginId);
 				
-				int affectedRow = DBUtil.selectRowIntValue(conn, sql);
-				if(affectedRow == 1) {
+				boolean isLoginDup = DBUtil.selectRowBooleanValue(conn, sql);
+				if(isLoginDup) {
 					System.out.printf("%s 는(은) 이미 사용중인 아이디 입니다.\n",loginId);
 					continue;
 				}
@@ -214,16 +215,13 @@ public class App {
 					System.out.println("비밀번호를 입력해주세요");
 					continue;
 				}
-				break;
-			}
-			
-			while(true) {
 				System.out.print("비밀번호 확인 : ");
-				String pwCHK = sc.nextLine();
-				if(loginPw.equals(pwCHK)) {
-					break;
+				String pwCHK = sc.nextLine().trim();
+				if(loginPw.equals(pwCHK) == false) {
+					System.out.println("비밀번호가 일치하지 않습니다.");
+					continue;
 				}
-				System.out.println("비밀번호가 일치하지 않습니다.");
+				break;
 			}
 			
 			while(true) {
@@ -248,11 +246,13 @@ public class App {
 			System.out.println("회원가입이 완료되었습니다.");
 			System.out.printf("[%s] 계정이 생성되었습니다.\n", loginId);
 		}
-		// 로그인
+		// 멤버 로그인
 		else if(cmd.equals("member login")) {
 			System.out.println("== 로그인 ==");
-			String loginId;
-			String loginPw;
+			
+			String loginId = null;
+			String loginPw = null;
+			
 			while(true) {
 				System.out.print("아이디 : ");
 				loginId = sc.nextLine().trim();
@@ -273,18 +273,17 @@ public class App {
 			}
 			
 			SecSql sql = new SecSql();
-			sql.append("SELECT COUNT(*) > 0");
+			sql.append("SELECT *");
 			sql.append("FROM members");
 			sql.append("WHERE loginId = ?",loginId);
 			sql.append("AND loginPw = ?",loginPw);
 			
-			int affectedRow = DBUtil.selectRowIntValue(conn, sql);
+			loginMember = DBUtil.selectRow(conn, sql);
 			
-			if(affectedRow == 0) {
+			if(loginMember.isEmpty()) {
 				System.out.println("아이디와 비밀번호를 확인해주세요.");
 				return 0;
 			}
-			
 			System.out.printf("%s님 환영합니다.\n", loginId);
 		}
 		return 0;

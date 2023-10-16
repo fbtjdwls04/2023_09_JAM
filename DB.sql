@@ -29,3 +29,26 @@ FROM article;
 -- updateDate = NOW(),
 -- title = CONCAT('제목', ROUND(RAND() * 100)),
 -- `body` = CONCAT('내용', ROUND(RAND() * 100));
+
+CREATE TABLE members(
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    regDate DATETIME NOT NULL,
+    updateDate DATETIME NOT NULL,    
+    loginId VARCHAR(50) NOT NULL UNIQUE,
+    loginPw VARCHAR(100) NOT NULL,    
+    `name` VARCHAR(50) NOT NULL
+);
+
+INSERT INTO members
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'admin',
+loginPw = 'admin',
+`name` = '운영자';
+
+SELECT * FROM members;
+
+SELECT
+FROM members 
+WHERE loginId = 'admin' 
+AND loginPw = 'admin';
