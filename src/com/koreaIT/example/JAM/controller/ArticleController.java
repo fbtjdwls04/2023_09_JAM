@@ -2,7 +2,6 @@ package com.koreaIT.example.JAM.controller;
 
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.koreaIT.example.JAM.Article;
@@ -41,7 +40,7 @@ public class ArticleController extends Controller {
 
 	public void showList() {
 		System.out.println("==게시물 목록==");
-		List<Map<String, Object>> articles = articleService.showList();
+		List<Article> articles = articleService.showList();
 		
 		if(articles.size() == 0) {
 			System.out.println("게시글이 없습니다.");
@@ -49,30 +48,31 @@ public class ArticleController extends Controller {
 		}
 		
 		System.out.println("번호/제목");
-		for(Map<String, Object> article : articles) {
-			System.out.printf("%d  /",article.get("id"));
-			System.out.printf("%s  /",article.get("regDate"));
-			System.out.printf("%s  /",article.get("loginId"));
-			System.out.printf("%s  /",article.get("title"));
-			System.out.printf("%s  \n",article.get("body"));
+		for(Article article : articles) {
+			System.out.printf("%d  /",article.id);
+			System.out.printf("%s  /",article.regDate);
+			System.out.printf("%s  /",article.loginId);
+			System.out.printf("%s  /",article.title);
+			System.out.printf("%s  \n",article.body);
 		}
 	}
 
 	public void showDetail() {
 		int id = Integer.parseInt(cmd.split(" ")[2]);
 		
-		Map<String, Object> article = articleService.showDetail(id);
+		Article article = articleService.showDetail(id);
 		
-		if(article.isEmpty()) {
+		if(article == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
 			return;
 		}
+		
 		System.out.println("==게시물 상세보기==");
-		System.out.printf("%d  /",article.get("id"));
-		System.out.printf("%s  /",article.get("regDate"));
-		System.out.printf("%s  /",article.get("loginId"));
-		System.out.printf("%s  /",article.get("title"));
-		System.out.printf("%s  \n",article.get("body"));
+		System.out.printf("%d  /",article.id);
+		System.out.printf("%s  /",article.regDate);
+		System.out.printf("%s  /",article.loginId);
+		System.out.printf("%s  /",article.title);
+		System.out.printf("%s  \n",article.body);
 	}
 
 	public void doModify() {

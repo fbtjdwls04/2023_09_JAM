@@ -32,7 +32,7 @@ public class ArticleDao {
 	public List<Map<String, Object>> showList() {
 		SecSql sql = new SecSql();
 		sql.append("SELECT A.id");
-		sql.append(", A.regDate , A.updateDate , M.loginId , A.title , A.body");
+		sql.append(", A.regDate , A.updateDate ,A.memberId , M.loginId , A.title , A.body");
 		sql.append("FROM article AS A");
 		sql.append("INNER JOIN members AS M");
 		sql.append("ON A.memberId = M.id");
@@ -44,12 +44,11 @@ public class ArticleDao {
 	public Map<String, Object> showDetail(int id) {
 		SecSql sql = new SecSql();
 		sql.append("SELECT A.id");
-		sql.append(", A.regDate , A.updateDate , M.loginId , A.title , A.body");
+		sql.append(", A.regDate , A.updateDate , A.memberId , M.loginId , A.title , A.body");
 		sql.append("FROM article AS A");
 		sql.append("INNER JOIN members AS M");
 		sql.append("ON A.memberId = M.id");
 		sql.append("HAVING id = ?",id);
-		sql.append("ORDER BY id DESC");
 		
 		return DBUtil.selectRow(conn, sql);
 	}
