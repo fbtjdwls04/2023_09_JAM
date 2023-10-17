@@ -20,28 +20,12 @@ public class ArticleService {
 		return articleDao.doWrite(title, body);
 	}
 
-	public List<Article> showList() {
-		
-		List<Article> articles = new ArrayList<>();
-		
-		List<Map<String, Object>> articleListMap = articleDao.showList();
-		
-		for(Map<String,Object> articleMap : articleListMap) {
-			articles.add(new Article(articleMap));
-		}
-		
-		return articles;
+	public List<Map<String, Object>> showList() {
+		return articleDao.showList();
 	}
 
-	public Article showDetail(int id) {
-		Map<String, Object> map = articleDao.showDetail(id);
-		
-		if(map.isEmpty()) {
-			return null;
-		}
-		
-		Article article = new Article(map);
-		return article;
+	public Map<String, Object> showDetail(int id) {
+		return articleDao.showDetail(id);
 	}
 
 	public void doModify(int id, String newTitle, String newBody) {
@@ -54,5 +38,9 @@ public class ArticleService {
 
 	public int articleCount(int id) {
 		return articleDao.articleCount(id);
+	}
+
+	public boolean isAuthority(int id) {
+		return articleDao.isAuthority(id);
 	}
 }

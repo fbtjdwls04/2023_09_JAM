@@ -3,10 +3,11 @@ CREATE DATABASE JAM;
 USE JAM;
 
 CREATE TABLE article(
-    id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     regDate DATETIME NOT NULL,
     updateDate DATETIME NOT NULL,
-    title CHAR(100) NOT NULL,
+    memberId INT UNSIGNED NOT NULL,
+    title VARCHAR(100) NOT NULL,
     `body` TEXT NOT NULL
 );
 
@@ -16,6 +17,7 @@ DESC article;
 INSERT INTO article
 SET regDate = NOW(),
 updateDate = NOW(),
+memberId = 1,
 title = CONCAT('제목', RAND()),
 `body` = CONCAT('내용', RAND());
 
@@ -48,7 +50,7 @@ loginPw = 'admin',
 
 SELECT * FROM members;
 
-SELECT
+SELECT *
 FROM members 
 WHERE loginId = 'admin' 
 AND loginPw = 'admin';
