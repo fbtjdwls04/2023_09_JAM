@@ -3,14 +3,17 @@ package com.koreaIT.example.JAM.controller;
 import java.sql.Connection;
 import java.util.Scanner;
 
+import com.koreaIT.example.JAM.Member;
 import com.koreaIT.example.JAM.service.MemberService;
+import com.koreaIT.example.JAM.session.Session;
+
 
 public class MemberController extends Controller{
 	
 	private MemberService memberService;
 	private Scanner sc;
 	
-	public MemberController(Connection conn,Scanner sc) {
+	public MemberController(Connection conn, Scanner sc) {
 		memberService = new MemberService(conn);
 		this.sc = sc;
 	}
@@ -73,8 +76,15 @@ public class MemberController extends Controller{
 	
 	/** 멤버 로그인 */
 	public void doLogin() {
+		
+		if(Session.isLogined()) {
+			System.out.println("로그아웃 후 사용해주세요");
+			return;
+		}
+		
 		System.out.println("== 로그인 ==");
 		
+		Member loginMember = null;
 		String loginId = null;
 		String loginPw = null;
 		
@@ -97,7 +107,38 @@ public class MemberController extends Controller{
 			}
 			break;
 		}
+		loginMember = memberService.doLogin(loginId, loginPw);
 		
+		if(loginMember == null) {
+			System.out.println("아이디와 비밀번호를 확인해주세요.");
+			return;
+		}
+		
+		Session.login(loginMember);  
 		System.out.printf("%s님 환영합니다.\n", loginId);
+	}
+
+	public void doLogout() {
+		
+		if(Session.isLogined() == false) {
+			System.out.println("로그인 후 사용해주세요");
+			return;
+		}
+		
+		Session.logout();
+		System.out.println("로그아웃 되었습니다.");
+	}
+
+	public void showProfile() {
+		
+		if(Session.isLogined() == false) {
+			System.out.println("로그인 후 사용해주세요");
+			return;
+		}
+		
+		System.out.println("== 마이 페이지 ==");
+		System.out.println("생성일 : " + Session.loginedMember.regDate);
+		System.out.println("아이디 : " + Session.loginedMember.loginId);
+		System.out.println("이름 : "+ Session.loginedMember.name);
 	}
 }

@@ -8,11 +8,8 @@ import java.util.Scanner;
 import com.koreaIT.example.JAM.controller.ArticleController;
 import com.koreaIT.example.JAM.controller.Controller;
 import com.koreaIT.example.JAM.controller.MemberController;
-import com.koreaIT.example.JAM.util.DBUtil;
-import com.koreaIT.example.JAM.util.SecSql;
 
 public class App {
-	
 	public void start() {
 		System.out.println("=프로그램 시작==");
 		
@@ -78,6 +75,12 @@ public class App {
 		}
 		else if(cmd.equals("member login")) {
 			memberController.doLogin();
+		}
+		else if(cmd.equals("member logout")) {
+			memberController.doLogout();
+		}
+		else if(cmd.equals("member profile")) {
+			memberController.showProfile();
 		}
 		// 게시물 작성
 		else if (cmd.equals("article write")) {

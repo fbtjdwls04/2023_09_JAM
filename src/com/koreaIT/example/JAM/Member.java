@@ -18,7 +18,7 @@ public class Member {
 		this.name = name;
 	}
 	
-	Member(Map<String, Object> MemberMap){
+	public Member(Map<String, Object> MemberMap){
 		this.id = (int) MemberMap.get("id");
 		this.regDate = (LocalDateTime) MemberMap.get("regDate");
 		this.loginId = (String) MemberMap.get("loginId");
