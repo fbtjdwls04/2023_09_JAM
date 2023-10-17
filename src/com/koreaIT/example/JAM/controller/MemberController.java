@@ -8,7 +8,7 @@ import com.koreaIT.example.JAM.service.MemberService;
 import com.koreaIT.example.JAM.session.Session;
 
 
-public class MemberController extends Controller{
+public class MemberController{
 	
 	private MemberService memberService;
 	private Scanner sc;

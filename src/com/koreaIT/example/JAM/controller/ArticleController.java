@@ -8,7 +8,7 @@ import com.koreaIT.example.JAM.Article;
 import com.koreaIT.example.JAM.service.ArticleService;
 import com.koreaIT.example.JAM.session.Session;
 
-public class ArticleController extends Controller {
+public class ArticleController{
 	
 	private ArticleService articleService;
 	private Scanner sc;

@@ -6,15 +6,11 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 import com.koreaIT.example.JAM.controller.ArticleController;
-import com.koreaIT.example.JAM.controller.Controller;
 import com.koreaIT.example.JAM.controller.MemberController;
 
 public class App {
 	public void start() {
 		System.out.println("=프로그램 시작==");
-		
-		
-		Controller controller = null;
 		
 		Scanner sc = new Scanner(System.in);
 		
@@ -65,7 +61,6 @@ public class App {
 	private int doAction(Connection conn, String cmd, Scanner sc) {
 		MemberController memberController = new MemberController(conn, sc);
 		ArticleController articleController = new ArticleController(conn, sc, cmd);
-		Controller controller = null;
 		
 		if (cmd.equals("exit")) {
 			return -1;

@@ -29,7 +29,7 @@ public class MemberDao {
 		sql.append("SET regDate = NOW(),");
 		sql.append("updateDate = NOW(),");
 		sql.append("loginId = ?,",loginId);
-		sql.append("loginPw = ?,",loginPw);
+		sql.append("loginPw = SHA2(?, 256),",loginPw);
 		sql.append("`name` = ?",name);
 		
 		DBUtil.insert(conn, sql);
@@ -40,7 +40,7 @@ public class MemberDao {
 		sql.append("SELECT *");
 		sql.append("FROM members");
 		sql.append("WHERE loginId = ?",loginId);
-		sql.append("AND loginPw = ?",loginPw);
+		sql.append("AND loginPw = SHA2(?, 256)",loginPw);
 		
 		return DBUtil.selectRow(conn, sql);
 	}
