@@ -82,19 +82,19 @@ public class App {
 			articleController.doWrite();
 		} 
 		// 게시물 목록
-		else if (cmd.equals("article list")) {
-			articleController.showList();
+		else if (cmd.startsWith("article list ") || cmd.equals("article list")) {
+			articleController.showList(cmd);
 		} 
 		// 게시물 디테일
-		else if (cmd.startsWith("article detail")) {
+		else if (cmd.startsWith("article detail ")) {
 			articleController.showDetail();
 		}
 		// 게시물 수정
-		else if (cmd.startsWith("article modify")) {
+		else if (cmd.startsWith("article modify ")) {
 			articleController.doModify();
 		}
 		// 게시물 삭제
-		else if (cmd.startsWith("article delete")) {
+		else if (cmd.startsWith("article delete ")) {
 			articleController.doDelete();
 		}else {
 			System.out.println("존재하지 않는 명령어입니다.");

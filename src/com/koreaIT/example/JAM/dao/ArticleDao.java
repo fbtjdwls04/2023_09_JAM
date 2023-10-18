@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
-import com.koreaIT.example.JAM.session.Session;
 import com.koreaIT.example.JAM.util.DBUtil;
 import com.koreaIT.example.JAM.util.SecSql;
 
@@ -28,14 +27,17 @@ public class ArticleDao {
 		
 		return DBUtil.insert(conn, sql);
 	}
-
-	public List<Map<String, Object>> showList() {
+	
+	public List<Map<String, Object>> showList(String keyword) {
 		SecSql sql = new SecSql();
 		sql.append("SELECT A.id");
-		sql.append(", A.regDate , A.updateDate ,A.memberId , M.loginId , A.title , A.body");
+		sql.append(", A.regDate , A.updateDate ,A.memberId , M.name , A.title , A.body");
 		sql.append("FROM article AS A");
 		sql.append("INNER JOIN members AS M");
 		sql.append("ON A.memberId = M.id");
+		if(keyword.length() > 0) {
+			sql.append("WHERE A.title LIKE CONCAT('%', ? , '%')", keyword);
+		}
 		sql.append("ORDER BY id DESC");
 		
 		return DBUtil.selectRows(conn, sql);
@@ -44,11 +46,11 @@ public class ArticleDao {
 	public Map<String, Object> showDetail(int id) {
 		SecSql sql = new SecSql();
 		sql.append("SELECT A.id");
-		sql.append(", A.regDate , A.updateDate , A.memberId , M.loginId , A.title , A.body");
+		sql.append(", A.regDate , A.updateDate , A.memberId , M.name , A.title , A.body");
 		sql.append("FROM article AS A");
 		sql.append("INNER JOIN members AS M");
 		sql.append("ON A.memberId = M.id");
-		sql.append("HAVING id = ?",id);
+		sql.append("WHERE A.id = ?",id);
 		
 		return DBUtil.selectRow(conn, sql);
 	}
@@ -82,13 +84,12 @@ public class ArticleDao {
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
 
-	public boolean isAuthority(int id, int memberId) {
+	public Map<String, Object> getArticle(int id) {
 		SecSql sql = new SecSql();
-		sql.append("SELECT COUNT(*) > 0");
+		sql.append("SELECT *");
 		sql.append("FROM article");
 		sql.append("WHERE id = ?", id);
-		sql.append("AND memberId = ?", memberId);
 		
-		return DBUtil.selectRowBooleanValue(conn, sql);
+		return DBUtil.selectRow(conn, sql);
 	}
 }

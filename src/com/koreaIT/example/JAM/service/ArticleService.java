@@ -20,8 +20,8 @@ public class ArticleService {
 		return articleDao.doWrite(memberId,title, body);
 	}
 
-	public List<Article> showList() {
-		List<Map<String, Object>> articleMap = articleDao.showList();
+	public List<Article> showList(String keyword) {
+		List<Map<String, Object>> articleMap = articleDao.showList(keyword);
 		
 		List<Article> articles = new ArrayList<>();
 
@@ -55,7 +55,14 @@ public class ArticleService {
 		return articleDao.articleCount(id);
 	}
 
-	public boolean isAuthority(int id, int memberId) {
-		return articleDao.isAuthority(id, memberId);
+	public Article getArticle(int id) {
+		Map<String, Object> articleMap = articleDao.getArticle(id);
+		
+		if(articleMap.isEmpty()) {
+			return null;
+		}
+		
+		return new Article(articleMap);
 	}
+
 }

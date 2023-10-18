@@ -39,23 +39,31 @@ public class ArticleController{
 		System.out.printf("%d번 게시물이 생성되었습니다.\n", id);
 	}
 
-	public void showList() {
+	public void showList(String cmd) {
 		System.out.println("==게시물 목록==");
-		List<Article> articles = articleService.showList();
 		
-		if(articles.size() == 0) {
+		String searchKeyword = cmd.substring("article list".length()).trim();
+
+		List<Article> articles = articleService.showList(searchKeyword);
+		
+		if(searchKeyword.length() > 0) {
+			
+			System.out.println("검색어 : " + searchKeyword);
+			
+			if(articles.size() == 0) {
+				System.out.println("검색결과가 없습니다.");
+				return;
+			}
+			
+		}else if(articles.size() == 0){
 			System.out.println("게시글이 없습니다.");
 			return;
 		}
 		
-		System.out.println("번호/제목");
+		
+		System.out.println("번호  /  제목  /  내용  / 작성자");
 		for(Article article : articles) {
-			System.out.printf("%d  /  ",article.id);
-			System.out.printf("%s  /  ",Util.datetimeFormat(article.regDate));
-			System.out.printf("%s  /  ",Util.datetimeFormat(article.updateDate));
-			System.out.printf("%s  /  ",article.loginId);
-			System.out.printf("%s  /  ",article.title);
-			System.out.printf("%s  \n",article.body);
+			System.out.printf("%d  /  %s  /  %s  /  %s \n",article.id,article.title,article.body,article.name);
 		}
 	}
 
@@ -70,12 +78,12 @@ public class ArticleController{
 		}
 		
 		System.out.println("==게시물 상세보기==");
-		System.out.printf("%d  /  ",article.id);
-		System.out.printf("%s  /  ",Util.datetimeFormat(article.regDate));
-		System.out.printf("%s  /  ",Util.datetimeFormat(article.updateDate));
-		System.out.printf("%s  /  ",article.loginId);
-		System.out.printf("%s  /  ",article.title);
-		System.out.printf("%s  \n",article.body);
+		System.out.printf("번  호 : %d  \n",article.id);
+		System.out.printf("작성일 : %s  \n",Util.datetimeFormat(article.regDate));
+		System.out.printf("수정일 : %s  \n",Util.datetimeFormat(article.updateDate));
+		System.out.printf("작성자 : %s  \n",article.name);
+		System.out.printf("제  목 : %s  \n",article.title);
+		System.out.printf("내  용 : %s  \n",article.body);
 	}
 
 	public void doModify() {
@@ -87,14 +95,14 @@ public class ArticleController{
 		
 		int id = Integer.parseInt(cmd.split(" ")[2]);
 		
-		int articleCount = articleService.articleCount(id);
+		Article article = articleService.getArticle(id);
 		
-		if(articleCount == 0) {
+		if(article == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다.\n",id);
 			return;
 		}
 		
-		if(articleService.isAuthority(id, Session.loginedMemberId) == false) {
+		if(article.memberId != Session.loginedMemberId) {
 			System.out.println("권한이 없습니다.");
 			return;
 		}
@@ -119,18 +127,17 @@ public class ArticleController{
 		
 		int id = Integer.parseInt(cmd.split(" ")[2]);
 		
-		int articleCount = articleService.articleCount(id);
+		Article article = articleService.getArticle(id);
 		
-		if(articleCount == 0) {
+		if(article == null) {
 			System.out.printf("%d번 게시물은 존재하지 않습니다.\n",id);
 			return;
 		}
 		
-		if(articleService.isAuthority(id, Session.loginedMemberId) == false) {
+		if(article.memberId != Session.loginedMemberId) {
 			System.out.println("권한이 없습니다.");
 			return;
 		}
-		
 		articleService.doDelete(id);
 		
 		System.out.printf("%d번 게시물이 삭제되었습니다.\n",id);
