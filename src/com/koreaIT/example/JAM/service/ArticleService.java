@@ -16,8 +16,8 @@ public class ArticleService {
 		articleDao = new ArticleDao(conn);
 	}
 
-	public int doWrite(String title, String body) {
-		return articleDao.doWrite(title, body);
+	public int doWrite(int memberId,String title, String body) {
+		return articleDao.doWrite(memberId,title, body);
 	}
 
 	public List<Article> showList() {
@@ -55,7 +55,7 @@ public class ArticleService {
 		return articleDao.articleCount(id);
 	}
 
-	public boolean isAuthority(int id) {
-		return articleDao.isAuthority(id);
+	public boolean isAuthority(int id, int memberId) {
+		return articleDao.isAuthority(id, memberId);
 	}
 }

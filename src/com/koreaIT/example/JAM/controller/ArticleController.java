@@ -7,6 +7,7 @@ import java.util.Scanner;
 import com.koreaIT.example.JAM.Article;
 import com.koreaIT.example.JAM.service.ArticleService;
 import com.koreaIT.example.JAM.session.Session;
+import com.koreaIT.example.JAM.util.Util;
 
 public class ArticleController{
 	
@@ -32,8 +33,8 @@ public class ArticleController{
 		String title = sc.nextLine();
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
-
-		int id = articleService.doWrite(title, body);
+		
+		int id = articleService.doWrite(Session.loginedMemberId,title, body);
 		
 		System.out.printf("%d번 게시물이 생성되었습니다.\n", id);
 	}
@@ -49,10 +50,11 @@ public class ArticleController{
 		
 		System.out.println("번호/제목");
 		for(Article article : articles) {
-			System.out.printf("%d  /",article.id);
-			System.out.printf("%s  /",article.regDate);
-			System.out.printf("%s  /",article.loginId);
-			System.out.printf("%s  /",article.title);
+			System.out.printf("%d  /  ",article.id);
+			System.out.printf("%s  /  ",Util.datetimeFormat(article.regDate));
+			System.out.printf("%s  /  ",Util.datetimeFormat(article.updateDate));
+			System.out.printf("%s  /  ",article.loginId);
+			System.out.printf("%s  /  ",article.title);
 			System.out.printf("%s  \n",article.body);
 		}
 	}
@@ -68,10 +70,11 @@ public class ArticleController{
 		}
 		
 		System.out.println("==게시물 상세보기==");
-		System.out.printf("%d  /",article.id);
-		System.out.printf("%s  /",article.regDate);
-		System.out.printf("%s  /",article.loginId);
-		System.out.printf("%s  /",article.title);
+		System.out.printf("%d  /  ",article.id);
+		System.out.printf("%s  /  ",Util.datetimeFormat(article.regDate));
+		System.out.printf("%s  /  ",Util.datetimeFormat(article.updateDate));
+		System.out.printf("%s  /  ",article.loginId);
+		System.out.printf("%s  /  ",article.title);
 		System.out.printf("%s  \n",article.body);
 	}
 
@@ -91,7 +94,7 @@ public class ArticleController{
 			return;
 		}
 		
-		if(articleService.isAuthority(id) == false) {
+		if(articleService.isAuthority(id, Session.loginedMemberId) == false) {
 			System.out.println("권한이 없습니다.");
 			return;
 		}
@@ -123,7 +126,7 @@ public class ArticleController{
 			return;
 		}
 		
-		if(articleService.isAuthority(id) == false) {
+		if(articleService.isAuthority(id, Session.loginedMemberId) == false) {
 			System.out.println("권한이 없습니다.");
 			return;
 		}

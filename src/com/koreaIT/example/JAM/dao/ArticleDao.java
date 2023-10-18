@@ -16,13 +16,13 @@ public class ArticleDao {
 		this.conn = conn;
 	}
 
-	public int doWrite(String title, String body) {
+	public int doWrite(int memberId,String title, String body) {
 
 		SecSql sql = new SecSql();
 		sql.append("INSERT INTO article");
 		sql.append("SET regDate = NOW(),");
 		sql.append("updateDate = NOW(),");
-		sql.append("memberId = ?,",Session.loginedMember.id);
+		sql.append("memberId = ?,",memberId);
 		sql.append("title = ?,",title);
 		sql.append("`body` = ?",body);
 		
@@ -82,12 +82,12 @@ public class ArticleDao {
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
 
-	public boolean isAuthority(int id) {
+	public boolean isAuthority(int id, int memberId) {
 		SecSql sql = new SecSql();
 		sql.append("SELECT COUNT(*) > 0");
 		sql.append("FROM article");
 		sql.append("WHERE id = ?", id);
-		sql.append("AND memberId = ?", Session.loginedMemberId);
+		sql.append("AND memberId = ?", memberId);
 		
 		return DBUtil.selectRowBooleanValue(conn, sql);
 	}
